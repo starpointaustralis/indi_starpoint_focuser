@@ -1,0 +1,16 @@
+# Build and compiler artefacts
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Object and binaries
+*.o
+*.a
+*.so
+
+# IDE and local files
+.vscode/
+.idea/
+compile_commands.json
