@@ -1,12 +1,13 @@
+cmake_minimum_required(VERSION 2.8)   # <- put this BEFORE project() to avoid the warning
+
 # define the project
 project(indi_starpoint_focuser C CXX)
-cmake_minimum_required(VERSION 2.8)
 
 include(GNUInstallDirs)
 
 # add cmake_modules folder
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/")
-LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake_modules/")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake_modules/")
 
 # find our required packages
 find_package(Nova REQUIRED)
@@ -22,6 +23,10 @@ find_library(INDI_DRIVER_LIB
     NAMES indidriver
     PATHS /usr/lib /usr/lib/x86_64-linux-gnu /usr/local/lib
 )
+
+# Convenience variables
+set(INDI_INCLUDE_DIRS ${INDI_INCLUDE_DIR})
+set(INDI_DATA_DIR     share/indi) 
 
 # set the version number in config.h and driver's xml file
 set(CDRIVER_VERSION_MAJOR 1)
@@ -40,25 +45,20 @@ configure_file(
 )
 
 # set our include directories to look for header files
-include_directories( ${CMAKE_CURRENT_BINARY_DIR})
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR})
-include_directories( ${INDI_INCLUDE_DIR})
-include_directories( ${NOVA_INCLUDE_DIR})
-include_directories( ${EV_INCLUDE_DIR})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${INDI_INCLUDE_DIR})
+include_directories(${NOVA_INCLUDE_DIR}))
 
 include(CMakeCommon)
+
+# make sure we override any INDI libs set in CMakeCommon
 set(INDI_LIBRARIES ${INDI_DRIVER_LIB})
 
 # tell cmake to build our executable
 add_executable(
     indi_starpoint_focuser
     indi_starpoint_focuser.cpp
-)
-
-target_include_directories(indi_starpoint_focuser PRIVATE
-    ${INDI_INCLUDE_DIRS}
-    ${NOVA_INCLUDE_DIRS}
-    ${GSL_INCLUDE_DIRS}
 )
 
 # link to libraries
@@ -75,6 +75,7 @@ install(TARGETS indi_starpoint_focuser RUNTIME DESTINATION bin)
 # and where to put the driver's xml file.
 install(
     FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/indi_starpoint_focuser.xml
-    DESTINATION ${INDI_DATA_DIR}
+        ${CMAKE_CURRENT_BINARY_DIR}/indi_starpoint_focuser.xml
+    DESTINATION
+        ${INDI_DATA_DIR}
 )
